@@ -1,0 +1,65 @@
+﻿@model List<hocAjax.Models.Student>
+@{
+    ViewBag.Title = "Home Page";
+}
+<main>
+    <h1>Danh sach Student</h1>
+    <table class="table" id="loading">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Address</th>
+                <th>Gender</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Su dung ajax de render ra body-->
+        </tbody>
+    </table>
+    <button id="xemThem" class="btn btn-primary">Xem them</button>
+</main>
+
+<script src="~/Scripts/jquery-3.6.3.min.js"></script>
+<script>
+    let skipCount = 0;
+    let takeCount = 4;
+    $(() => {
+        loadStudents();
+        $('#xemThem').on('click', () => loadStudents())
+    }) 
+    function loadStudents() {
+        $.ajax({
+            // goi den action trong homecontroller
+            url : '/Home/GetStudents',
+            // truyen data vao request
+            data: {
+                skipCount: skipCount,
+                takeCount: takeCount
+            },
+            // neu thanh cong truyen data de render
+            success: (data) => {
+                // neu co du lieu
+                console.log(data.length)
+                if (data.length > 0) {
+                    // tao giao dien html tu data
+                    var html = "";
+                    $.each(data, (i, item) => {
+                        html += '<tr>',
+                            html += `<td>${item.name}</td>`
+                        html += `<td>${item.age}</td>`
+                        html += `<td>${item.address}</td>`
+                        html += `<td>${item.male ? "male" : "female"}</td>`
+                        html += '</tr>';
+                    });
+                    // them data vao giao dien
+                    $("#loading tbody").append(html);
+                    // tang so luong skipcount len so luong take count
+                    skipCount += takeCount;
+                } else {
+                    $("#xemThem").hide();
+                }
+            }
+        })
+    }
+</script>
